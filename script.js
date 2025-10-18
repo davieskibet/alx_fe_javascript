@@ -6,9 +6,6 @@ let quotes = [
 
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
-const addQuoteBtn = document.getElementById("addQuote");
-const quoteTextInput = document.getElementById("newQuoteText");
-const quoteCategoryInput = document.getElementById("newQuoteCategory");
 
 function showRandomQuote() {
   if (quotes.length === 0) {
@@ -24,22 +21,46 @@ function showRandomQuote() {
 }
 
 function addQuote() {
-  const text = quoteTextInput.value.trim();
-  const category = quoteCategoryInput.value.trim();
+  const text = document.getElementById("newQuoteText").value.trim();
+  const category = document.getElementById("newQuoteCategory").value.trim();
 
   if (text === "" || category === "") {
     alert("Please enter both a quote and a category.");
     return;
   }
 
-  const newQuote = { text, category };
-  quotes.push(newQuote);
-
-  quoteTextInput.value = "";
-  quoteCategoryInput.value = "";
-
+  quotes.push({ text, category });
+  document.getElementById("newQuoteText").value = "";
+  document.getElementById("newQuoteCategory").value = "";
   alert("New quote added successfully!");
 }
 
+function createAddQuoteForm() {
+  const formContainer = document.createElement("div");
+
+  const heading = document.createElement("h3");
+  heading.textContent = "Add a New Quote";
+  formContainer.appendChild(heading);
+
+  const textInput = document.createElement("input");
+  textInput.id = "newQuoteText";
+  textInput.type = "text";
+  textInput.placeholder = "Enter a new quote";
+  formContainer.appendChild(textInput);
+
+  const categoryInput = document.createElement("input");
+  categoryInput.id = "newQuoteCategory";
+  categoryInput.type = "text";
+  categoryInput.placeholder = "Enter quote category";
+  formContainer.appendChild(categoryInput);
+
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "Add Quote";
+  addBtn.addEventListener("click", addQuote);
+  formContainer.appendChild(addBtn);
+
+  document.body.appendChild(formContainer);
+}
+
 newQuoteBtn.addEventListener("click", showRandomQuote);
-addQuoteBtn.addEventListener("click", addQuote);
+createAddQuoteForm(); // Call this so the form appears when page loads
