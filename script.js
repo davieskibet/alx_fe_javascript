@@ -1,39 +1,62 @@
-// Array of quotes
+// Array to hold quotes
 const quotes = [
   { text: "The best way to predict the future is to invent it.", category: "Motivation" },
   { text: "Life is what happens when you're busy making other plans.", category: "Life" },
   { text: "Do what you can, with what you have, where you are.", category: "Inspiration" }
 ];
 
-// Function to display a random quote
+/**
+ * ✅ Function: displayRandomQuote
+ * Selects a random quote and updates the DOM
+ */
 function displayRandomQuote() {
   const quoteDisplay = document.getElementById("quoteDisplay");
+
+  // Logic: pick random quote
   const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
-  quoteDisplay.innerHTML = `<p>"${quote.text}" — <strong>${quote.category}</strong></p>`;
+  const randomQuote = quotes[randomIndex];
+
+  // Update the DOM using innerHTML
+  quoteDisplay.innerHTML = `
+    <p>"${randomQuote.text}"</p>
+    <p><em>— ${randomQuote.category}</em></p>
+  `;
 }
 
-// Function to add new quotes dynamically
+/**
+ * ✅ Function: addQuote
+ * Adds a new quote to the quotes array and updates the DOM
+ */
 function addQuote() {
   const textInput = document.getElementById("newQuoteText");
   const categoryInput = document.getElementById("newQuoteCategory");
 
-  const newQuote = {
-    text: textInput.value.trim(),
-    category: categoryInput.value.trim()
-  };
+  const newQuoteText = textInput.value.trim();
+  const newQuoteCategory = categoryInput.value.trim();
 
-  if (newQuote.text && newQuote.category) {
-    quotes.push(newQuote);
+  // Logic: add new quote
+  if (newQuoteText && newQuoteCategory) {
+    quotes.push({ text: newQuoteText, category: newQuoteCategory });
+
+    // Update the DOM immediately with new quote
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    quoteDisplay.innerHTML = `
+      <p>"${newQuoteText}"</p>
+      <p><em>— ${newQuoteCategory}</em></p>
+    `;
+
+    // Clear input fields
     textInput.value = "";
     categoryInput.value = "";
-    alert("Quote added successfully!");
   } else {
-    alert("Please fill in both fields before adding a quote.");
+    alert("Please enter both quote text and category.");
   }
 }
 
-// Function to dynamically create the Add Quote form
+/**
+ * ✅ Function: createAddQuoteForm
+ * Dynamically creates a form for adding new quotes
+ */
 function createAddQuoteForm() {
   const formContainer = document.createElement("div");
 
@@ -58,18 +81,14 @@ function createAddQuoteForm() {
   addBtn.addEventListener("click", addQuote);
   formContainer.appendChild(addBtn);
 
-  // Basic styling for readability
-  formContainer.style.marginTop = "20px";
-  formContainer.style.display = "flex";
-  formContainer.style.flexDirection = "column";
-  formContainer.style.gap = "10px";
-
   document.body.appendChild(formContainer);
 }
 
-// Add event listener for showing random quotes
+/**
+ * ✅ Event listener on the “Show New Quote” button
+ */
 document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
 
-// Create the Add Quote form dynamically when the page loads
+// Create Add Quote form dynamically
 createAddQuoteForm();
 
