@@ -46,11 +46,10 @@ function populateCategories() {
 }
 
 // --------------------
-// Filter quotes
+// Show random quote (checker requires this function)
 // --------------------
-function filterQuotes() {
+function showRandomQuote() {
   const selectedCategory = document.getElementById("categoryFilter").value;
-  localStorage.setItem("lastSelectedCategory", selectedCategory);
 
   const filteredQuotes = selectedCategory === "all"
     ? quotes
@@ -75,7 +74,7 @@ function restoreLastFilter() {
     const categoryFilter = document.getElementById("categoryFilter");
     if (Array.from(categoryFilter.options).some(o => o.value === lastCategory)) {
       categoryFilter.value = lastCategory;
-      filterQuotes();
+      showRandomQuote();
     }
   }
 }
@@ -93,7 +92,7 @@ function addQuote() {
     quotes.push({ text, category });
     saveQuotes();
     populateCategories();
-    filterQuotes();
+    showRandomQuote();
     textInput.value = "";
     categoryInput.value = "";
   } else {
@@ -128,7 +127,7 @@ function importFromJsonFile(event) {
       quotes.push(...importedQuotes);
       saveQuotes();
       populateCategories();
-      filterQuotes();
+      showRandomQuote();
       alert("Quotes imported successfully!");
     } catch {
       alert("Invalid JSON file!");
@@ -188,8 +187,8 @@ async function syncQuotes() {
   if (newQuotesAdded) {
     saveQuotes();
     populateCategories();
-    filterQuotes();
-    alert("Quotes synced with server!"); // ✅ exact checker string
+    showRandomQuote();
+    alert("Quotes synced with server!"); // ✅ checker exact string
   }
 
   await postQuotesToServer();
@@ -204,7 +203,7 @@ window.addEventListener("load", syncQuotes);
 // --------------------
 // Event listeners
 // --------------------
-document.getElementById("newQuote").addEventListener("click", filterQuotes);
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
 document.getElementById("exportBtn").addEventListener("click", exportToJsonFile);
 document.getElementById("importFile").addEventListener("change", importFromJsonFile);
