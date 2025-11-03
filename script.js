@@ -66,3 +66,4 @@ document.getElementById("newQuote").addEventListener("click", displayRandomQuote
 // Initialize the form when page loads
 createAddQuoteForm();
 
+// force refresh
