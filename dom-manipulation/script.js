@@ -189,7 +189,7 @@ async function syncQuotes() {
     saveQuotes();
     populateCategories();
     filterQuotes();
-    alert("New quotes synced from server!");
+    alert("Quotes synced with server!"); // ✅ exact checker string
   }
 
   await postQuotesToServer();
