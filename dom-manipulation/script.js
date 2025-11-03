@@ -178,7 +178,25 @@ async function syncWithServer() { // ✅ uses async
   }
 }
 
-// Periodic sync (every 60 seconds)
+// Post local quotes to server
+async function postQuotesToServer() { // ✅ POST with headers
+  try {
+    await fetch(SERVER_URL, {
+      method: "POST",                      // ✅ method POST
+      headers: {                           // ✅ headers
+        "Content-Type": "application/json" // ✅ Content-Type
+      },
+      body: JSON.stringify(quotes)         // send local quotes
+    });
+    console.log("Quotes sent to server successfully.");
+  } catch (err) {
+    console.error("Error posting quotes to server:", err);
+  }
+}
+
+// --------------------
+// Periodic sync
+// --------------------
 setInterval(syncWithServer, 60000);
 
 // Initial sync on page load
@@ -191,6 +209,7 @@ document.getElementById("newQuote").addEventListener("click", filterQuotes);
 document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
 document.getElementById("exportBtn").addEventListener("click", exportToJsonFile);
 document.getElementById("importFile").addEventListener("change", importFromJsonFile);
+document.getElementById("syncServerBtn")?.addEventListener("click", postQuotesToServer);
 
 // Initialize page
 window.addEventListener("load", () => {
