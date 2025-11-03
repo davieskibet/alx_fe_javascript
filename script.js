@@ -16,7 +16,7 @@ function displayRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
   quoteDisplay.innerHTML = "<p>\"" + quote.text + "\" - <strong>" + quote.category + "</strong></p>";
-  sessionStorage.setItem("lastViewedQuote", randomIndex); // optional session storage example
+  sessionStorage.setItem("lastViewedQuote", randomIndex); // optional
 }
 
 // Add a new quote
@@ -29,12 +29,12 @@ function addQuote() {
     quotes.push({ text, category });
     textInput.value = "";
     categoryInput.value = "";
-    saveQuotes();
+    saveQuotes(); // <--- localStorage.setItem
     displayRandomQuote();
   }
 }
 
-// Create Add Quote form
+// Create Add Quote form with export/import
 function createAddQuoteForm() {
   const formContainer = document.createElement("div");
 
@@ -65,7 +65,7 @@ function createAddQuoteForm() {
   exportBtn.addEventListener("click", exportToJsonFile);
   formContainer.appendChild(exportBtn);
 
-  // Import JSON file input
+  // Import JSON input
   const importInput = document.createElement("input");
   importInput.type = "file";
   importInput.id = "importFile";
@@ -76,7 +76,7 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
-// Export quotes to JSON file
+// Export quotes as JSON
 function exportToJsonFile() {
   const dataStr = JSON.stringify(quotes, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -91,7 +91,7 @@ function exportToJsonFile() {
   URL.revokeObjectURL(url);
 }
 
-// Import quotes from JSON file
+// Import quotes from JSON
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function(e) {
@@ -111,7 +111,7 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// Event listener for "Show New Quote" button
+// Event listener for "Show New Quote"
 document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
 
 // Initialize the form
