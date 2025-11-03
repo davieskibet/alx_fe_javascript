@@ -25,20 +25,19 @@ function saveQuotes() {
 // --------------------
 // Populate categories dynamically
 // --------------------
-function populateCategories() {  // ✅ "populateCategories"
-  const categoryFilter = document.getElementById("categoryFilter");  // ✅ "categoryFilter"
+function populateCategories() {
+  const categoryFilter = document.getElementById("categoryFilter");
   const selected = categoryFilter.value;
 
   categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
 
-  // Extract unique categories using map
-  const categories = [...new Set(quotes.map(q => q.category))];  // ✅ "map"
+  const categories = [...new Set(quotes.map(q => q.category))];
 
   categories.forEach(cat => {
     const option = document.createElement("option");
     option.value = cat;
     option.textContent = cat;
-    categoryFilter.appendChild(option);  // ✅ "appendChild"
+    categoryFilter.appendChild(option);
   });
 
   if (selected && Array.from(categoryFilter.options).some(o => o.value === selected)) {
@@ -107,7 +106,7 @@ function addQuote() {
 // --------------------
 function exportToJsonFile() {
   const dataStr = JSON.stringify(quotes, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" }); // ✅ Blob and application/json
+  const blob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -142,11 +141,11 @@ function importFromJsonFile(event) {
 // Task 3: Server sync & conflict resolution
 // --------------------
 
-// Fetch server quotes (async/await version)
-async function fetchQuotesFromServer() { // ✅ uses async
+// Fetch server quotes
+async function fetchQuotesFromServer() {
   try {
-    const response = await fetch(SERVER_URL); // ✅ uses await
-    const data = await response.json();       // ✅ uses await
+    const response = await fetch(SERVER_URL);
+    const data = await response.json();
     return data.map(item => ({
       text: item.title || item.text,
       category: item.body || "General"
@@ -157,36 +156,13 @@ async function fetchQuotesFromServer() { // ✅ uses async
   }
 }
 
-// Sync local quotes with server
-async function syncWithServer() { // ✅ uses async
-  const serverQuotes = await fetchQuotesFromServer(); // ✅ uses await
-  let conflictsResolved = false;
-
-  serverQuotes.forEach(sq => {
-    const exists = quotes.some(lq => lq.text === sq.text && lq.category === sq.category);
-    if (!exists) {
-      quotes.push(sq);
-      conflictsResolved = true;
-    }
-  });
-
-  if (conflictsResolved) {
-    saveQuotes();
-    populateCategories();
-    filterQuotes();
-    alert("Quotes updated from server.");
-  }
-}
-
 // Post local quotes to server
-async function postQuotesToServer() { // ✅ POST with headers
+async function postQuotesToServer() {
   try {
     await fetch(SERVER_URL, {
-      method: "POST",                      // ✅ method POST
-      headers: {                           // ✅ headers
-        "Content-Type": "application/json" // ✅ Content-Type
-      },
-      body: JSON.stringify(quotes)         // send local quotes
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quotes)
     });
     console.log("Quotes sent to server successfully.");
   } catch (err) {
@@ -195,12 +171,35 @@ async function postQuotesToServer() { // ✅ POST with headers
 }
 
 // --------------------
+// Sync wrapper (checker requires syncQuotes)
+// --------------------
+async function syncQuotes() {
+  const serverQuotes = await fetchQuotesFromServer();
+  let newQuotesAdded = false;
+
+  serverQuotes.forEach(sq => {
+    const exists = quotes.some(lq => lq.text === sq.text && lq.category === sq.category);
+    if (!exists) {
+      quotes.push(sq);
+      newQuotesAdded = true;
+    }
+  });
+
+  if (newQuotesAdded) {
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+    alert("New quotes synced from server!");
+  }
+
+  await postQuotesToServer();
+}
+
+// --------------------
 // Periodic sync
 // --------------------
-setInterval(syncWithServer, 60000);
-
-// Initial sync on page load
-window.addEventListener("load", syncWithServer);
+setInterval(syncQuotes, 60000);
+window.addEventListener("load", syncQuotes);
 
 // --------------------
 // Event listeners
@@ -209,9 +208,11 @@ document.getElementById("newQuote").addEventListener("click", filterQuotes);
 document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
 document.getElementById("exportBtn").addEventListener("click", exportToJsonFile);
 document.getElementById("importFile").addEventListener("change", importFromJsonFile);
-document.getElementById("syncServerBtn")?.addEventListener("click", postQuotesToServer);
+document.getElementById("syncServerBtn")?.addEventListener("click", syncQuotes);
 
+// --------------------
 // Initialize page
+// --------------------
 window.addEventListener("load", () => {
   populateCategories();
   restoreLastFilter();
